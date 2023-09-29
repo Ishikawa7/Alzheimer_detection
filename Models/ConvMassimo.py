@@ -5,10 +5,10 @@ from tensorflow.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Averag
 from tensorflow.keras.models import model_from_json 
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 
-def get_Model(img_height, img_width, num_channels):
-    
-    model = Sequential(model_name="ConvMassimo")
-    model.add(Conv2D(filters = 32, kernel_size=4, activation="relu", input_shape=(img_height, img_width, num_channels)))
+def build_Model(img_height, img_width):
+    model = Sequential()
+    model.model_name = "ConvMassimo"
+    model.add(Conv2D(filters = 32, kernel_size=4, activation="relu", input_shape=(img_height, img_width, 1)))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Conv2D(filters = 32, kernel_size=3, activation="relu"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -20,5 +20,5 @@ def get_Model(img_height, img_width, num_channels):
     model.add(Dense(100, activation="gelu"))
     model.add(Dropout(0.2))
     model.add(Dense(1, activation="gelu"))
-    model.compile(optimizer="adam", loss="mse", metrics=["accuracy"])
+    model.compile(optimizer="adam", loss="mse", metrics=["mae"])
     return model

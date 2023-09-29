@@ -23,6 +23,11 @@ def class_occurences(dir_train: str = "Train/" , dir_test: str = "Test/") -> tup
     class_weights = dict_train_count.copy()
     for key in class_weights.keys():
         class_weights[key] = sum_train/dict_train_count[key]
+    
+    # normalize class weights
+    max_weight = max(class_weights.values())
+    for key in class_weights.keys():
+        class_weights[key] = class_weights[key]/max_weight
 
     return dict_train_count, dict_test_count, class_weights
 
@@ -82,10 +87,10 @@ def to_numpy_arrays(class_weights: dict, dir_train :str = "Train/", dir_test :st
     labels_train = np.array(labels_list_train)
     labels_train = labels_train.reshape(-1,1)
     
-    X_test = np.array(X_test)
-    y_test = np.array(y_test)
+    X_test = np.array(images_list_test)
+    y_test = np.array(class_weights_list_test)
     y_test = y_test.reshape(-1,1)
-    labels_test = np.array(labels_test)
+    labels_test = np.array(labels_list_test)
     labels_test = labels_test.reshape(-1,1)
 
-    return X_train, y_train, labels_list_train, X_test, y_test, labels_list_test
+    return X_train[:1000], y_train[:1000], labels_list_train[:1000], X_test[:500], y_test[:500], labels_list_test[:500]
