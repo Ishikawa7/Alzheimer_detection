@@ -1,5 +1,4 @@
 from tensorflow.keras import layers
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Model
 
 def buid_Model(img_height, img_width):
@@ -11,6 +10,7 @@ def buid_Model(img_height, img_width):
     conv_2 = layers.Conv2D(filters = 32, kernel_size=3, activation="relu", padding="same")(poolin_1)
     latent_space = layers.MaxPooling2D((2, 2), padding="same")(conv_2)
 
+    encoder_model = Model(inputs=[input], outputs=[latent_space])
     # Decoder
     conv_T1 = layers.Conv2DTranspose(filters = 32, kernel_size=3, strides=2, activation="relu", padding="same")(latent_space)
     conv_T2 = layers.Conv2DTranspose(filters = 32, kernel_size=3, strides=2, activation="relu", padding="same")(conv_T1)
@@ -19,11 +19,11 @@ def buid_Model(img_height, img_width):
     # Autoencoder
     autoencoder = Model(
         inputs = [input],
-        outputs = [output, latent_space]
+        outputs = [output]
         )
     autoencoder.compile(
         optimizer="adam",
-        loss="binary_crossentropy",
-        loss_weights=[1.0, 0.0],
+        loss="mse",
+        loss_weights=[1.0],
         )
-    return autoencoder
+    return autoencoder, encoder_model

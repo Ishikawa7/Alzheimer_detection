@@ -21,13 +21,15 @@ def class_occurences(dir_train: str = "Train/" , dir_test: str = "Test/") -> tup
 
     # calculate class weights
     class_weights = dict_train_count.copy()
+    class_weights.pop("Total")
     for key in class_weights.keys():
         class_weights[key] = sum_train/dict_train_count[key]
     
     # normalize class weights
     max_weight = max(class_weights.values())
+    min_weight = min(class_weights.values())
     for key in class_weights.keys():
-        class_weights[key] = class_weights[key]/max_weight
+        class_weights[key] = (class_weights[key]-min_weight)/(max_weight-min_weight)
 
     return dict_train_count, dict_test_count, class_weights
 
@@ -42,7 +44,7 @@ def shuffle(np_array_list: list[np.ndarray]) -> list[np.ndarray]:
     np_array_list = zip(*combined_list)
     return np_array_list
 
-def to_numpy_arrays(class_weights: dict, dir_train :str = "Train/", dir_test :str = "Test/"):
+def to_numpy_arrays(class_weights: dict, dir_train :str = "Train/", dir_test :str = "Test/", get_train : bool = True) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     images_list_train = []
     labels_list_train = []
     class_weights_list_train = []
@@ -93,4 +95,7 @@ def to_numpy_arrays(class_weights: dict, dir_train :str = "Train/", dir_test :st
     labels_test = np.array(labels_list_test)
     labels_test = labels_test.reshape(-1,1)
 
-    return X_train[:1000], y_train[:1000], labels_list_train[:1000], X_test[:500], y_test[:500], labels_list_test[:500]
+    if get_train:
+        return X_train, y_train, labels_train
+    else:
+        return X_test, y_test, labels_test
