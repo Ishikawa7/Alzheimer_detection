@@ -97,15 +97,14 @@ def test_numpy_arrays(class_weights: dict, dir_test :str = "Test/") -> tuple[np.
 
     return X_test, y_test, labels_test
 
-def convert_class_name_to_int(class_weights: dict, class_name: str) -> int:
-    # sort class_weights dict
-    class_weights = {k: v for k, v in sorted(class_weights.items(), key=lambda item: item[1])}
-    # get index of class_name
-    index = 0
-    for key in class_weights.keys():
-        if key == class_name:
-            return index
-        index += 1
+def convert_class_name_to_int(class_name: str) -> int:
+    class_names = {
+        'ModerateDemented': 3,
+        'MildDemented': 2,
+        'VeryMildDemented': 1,
+        'NonDemented': 0,
+    }
+    return class_names[class_name]
 
 def from_score_to_class(class_weights: dict ,score: float, bounds : list[float] = None) -> str:
     # get bounds from class_weights, bounds are the values between the classes
@@ -121,3 +120,15 @@ def from_score_to_class(class_weights: dict ,score: float, bounds : list[float] 
         if score < bounds[i]:
             return i
     return len(bounds)
+
+def convert_labels(labels: np.ndarray) -> np.ndarray:
+    labels_converted = []
+    for label in labels:
+        labels_converted.append(convert_class_name_to_int(label[0]))
+    return np.array(labels_converted)
+
+def convert_scores(scores: np.ndarray, class_weights: dict, bounds : list[float] = None) -> np.ndarray:
+    scores_converted = []
+    for score in scores:
+        scores_converted.append(from_score_to_class(class_weights, score[0], bounds))
+    return np.array(scores_converted)
