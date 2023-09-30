@@ -96,3 +96,28 @@ def test_numpy_arrays(class_weights: dict, dir_test :str = "Test/") -> tuple[np.
     labels_test = labels_test.reshape(-1,1)
 
     return X_test, y_test, labels_test
+
+def convert_class_name_to_int(class_weights: dict, class_name: str) -> int:
+    # sort class_weights dict
+    class_weights = {k: v for k, v in sorted(class_weights.items(), key=lambda item: item[1])}
+    # get index of class_name
+    index = 0
+    for key in class_weights.keys():
+        if key == class_name:
+            return index
+        index += 1
+
+def from_score_to_class(class_weights: dict ,score: float, bounds : list[float] = None) -> str:
+    # get bounds from class_weights, bounds are the values between the classes
+    class_weights_list = list(class_weights.values())
+    class_weights_list.sort()
+    if bounds == None:
+        bounds = []
+        for i in range(len(class_weights_list)-1):
+            bounds.append((class_weights_list[i]+class_weights_list[i+1])/2)
+    #print(bounds)
+    # get class from bounds
+    for i in range(len(bounds)):
+        if score < bounds[i]:
+            return i
+    return len(bounds)
